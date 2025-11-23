@@ -1,1 +1,1 @@
-Collection of anomaly detection projects
+Exploring the science of finding abnormal behaviors in data.
