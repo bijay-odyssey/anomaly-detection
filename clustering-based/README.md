@@ -7,7 +7,7 @@ This folder contains anomaly detection projects using **unsupervised clustering 
 
 #  **Project 1 — KMeans-Based Anomaly Detection**
 
-### ** Technique**
+### **Technique**
 
 KMeans is used to:
 
@@ -43,7 +43,7 @@ Features used:
 
 ---
 
-#  **Visualization **
+#  **Visualization**
 
 The generated notebook has:
 
