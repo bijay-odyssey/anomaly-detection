@@ -104,8 +104,8 @@ We remove `Region` and `Channel` since they are categorical.
 
 #  **Next Projects (Coming Soon)**
 
-* DBSCAN-based anomaly detection
-
+* Gaussian Mixture Model (GMM) Anomaly Detection
+   
  ---
  
  #  **Dependencies**
