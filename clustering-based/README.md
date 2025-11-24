@@ -53,7 +53,72 @@ The generated notebook has:
 
 ---
 
-#  **Dependencies**
+## **Project 2 — DBSCAN-Based Anomaly Detection**
+
+### **Technique**
+
+DBSCAN (Density-Based Spatial Clustering of Applications with Noise) identifies:
+
+* Dense regions → clusters
+* Sparse regions → anomalies (label = -1)
+
+It is excellent for anomaly detection because it **does not assume spherical clusters** like KMeans.
+
+---
+
+## **Dataset**
+
+**UCI Wholesale Customers Dataset**
+Features include yearly spending on:
+
+* Fresh
+* Milk
+* Grocery
+* Frozen
+* Detergents_Paper
+* Delicassen
+
+We remove `Region` and `Channel` since they are categorical.
+
+---
+
+## **Steps Performed**
+
+1. Load & clean dataset
+2. Scale features using StandardScaler
+3. Plot K-distance graph to estimate `eps`
+4. Apply DBSCAN with `eps ≈ 1.1` and `min_samples = 5`
+5. Label points with `cluster = -1` as anomalies
+6. Reduce to 2D using PCA
+7. Visualize anomalies (red) vs normal points (blue)
+
+---
+
+## **Output File**
+
+| File                         | Description                                   |
+| ---------------------------- | --------------------------------------------- |
+| `dbscan_anomaly.ipynb`       | Complete DBSCAN anomaly detection notebook    |
+
+
+
+---
+
+## **Why DBSCAN is Useful for Anomaly Detection?**
+
+* Automatically detects outliers (no separate threshold needed)
+* Works with any cluster shape (non-linear clusters)
+* Good for irregular density patterns
+
+---
+
+#  **Next Projects (Coming Soon)**
+
+* DBSCAN-based anomaly detection
+
+ ---
+ 
+ #  **Dependencies**
 
 ```
 pandas
@@ -64,10 +129,3 @@ seaborn
 ```
 
 ---
-
-#  **Next Projects (Coming Soon)**
-
-* DBSCAN-based anomaly detection
-* Gaussian Mixture Models (GMM) Anomaly Detection
-
- ---
