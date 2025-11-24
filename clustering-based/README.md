@@ -87,7 +87,7 @@ We remove `Region` and `Channel` since they are categorical.
 1. Load & clean dataset
 2. Scale features using StandardScaler
 3. Plot K-distance graph to estimate `eps`
-4. Apply DBSCAN with `eps ≈ 1.1` and `min_samples = 5`
+4. Apply DBSCAN with `eps ≈ 1.2` and `min_samples = 5`
 5. Label points with `cluster = -1` as anomalies
 6. Reduce to 2D using PCA
 7. Visualize anomalies (red) vs normal points (blue)
