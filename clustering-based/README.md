@@ -94,16 +94,6 @@ We remove `Region` and `Channel` since they are categorical.
 
 ---
 
-## **Output File**
-
-| File                         | Description                                   |
-| ---------------------------- | --------------------------------------------- |
-| `dbscan_anomaly.ipynb`       | Complete DBSCAN anomaly detection notebook    |
-
-
-
----
-
 ## **Why DBSCAN is Useful for Anomaly Detection?**
 
 * Automatically detects outliers (no separate threshold needed)
