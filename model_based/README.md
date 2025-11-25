@@ -121,10 +121,10 @@ df.to_csv("isolation_forest_results.csv", index=False)
 
 ##  **Future Project**
 
-🔹  **Local Outlier Factor (LOF)**
-🔹  **One-Class SVM**
-🔹 Oversample anomalies using **SMOTE** for supervised models
-🔹 Add **threshold tuning** on anomaly scores
+- **Local Outlier Factor (LOF)**
+- **One-Class SVM**
+- Oversample anomalies using **SMOTE** for supervised models
+- Add **threshold tuning** on anomaly scores
 
 ---
 
