@@ -1,136 +1,181 @@
-# **Credit Card Fraud Detection Using Isolation Forest (Unsupervised Anomaly Detection)**
+# Model-Based Anomaly Detection
 
-This project applies **Isolation Forest**, an unsupervised anomaly detection algorithm, on the popular **Credit Card Fraud Detection dataset (Kaggle)**.
-The goal is to detect fraudulent transactions using only patterns in the data — without training on labels.
+This repository contains **unsupervised model-based anomaly detection techniques** applied to the **Credit Card Fraud Detection** dataset (Kaggle). It includes implementations of:
 
----
+* **Isolation Forest**
+* **Local Outlier Factor (LOF)**
+* (Future additions: One-Class SVM)
 
-##  **Project Overview**
-
-Credit card fraud is extremely rare and highly imbalanced in the dataset:
-
-* **Total rows:** 284,807
-* **Fraud (Class = 1):** 492
-* **Legit (Class = 0):** 284,315
-* **Fraud Rate:** ≈ 0.1727%
-
-Since supervised learning struggles with extreme imbalance, we use **Isolation Forest**, which isolates anomalies by randomly partitioning the feature space.
+The goal is to detect fraudulent credit card transactions **without using labels for training**, highlighting both algorithm workflows and practical limitations.
 
 ---
 
-##  **Dataset**
+## Dataset Overview
 
-Source: Kaggle — *Credit Card Fraud Detection*
-Features:
+**Source:** Kaggle — Credit Card Fraud Detection
 
-* PCA-transformed components: `V1` to `V28`
-* `Time`
-* `Amount`
-* `Class` (ground-truth, only for evaluation — NOT used for training)
+**Dataset statistics:**
+
+| Metric          | Value     |
+| --------------- | --------- |
+| Total rows      | 284,807   |
+| Fraud (Class=1) | 492       |
+| Legit (Class=0) | 284,315   |
+| Fraud Rate      | ≈ 0.1727% |
+
+**Features include:**
+
+* PCA-transformed components: V1–V28
+* Time
+* Amount
+* Class (ground truth; only used for evaluation)
+
+Fraud is extremely rare, making **supervised learning challenging** and motivating unsupervised anomaly detection methods.
 
 ---
 
-##  **Steps Performed**
+## 1. Isolation Forest
 
-### **1. Import Libraries**
+**Isolation Forest** isolates anomalies by recursively partitioning the feature space. It is effective for datasets with extreme class imbalance.
 
-NumPy, Pandas, Matplotlib, Seaborn, Scikit-learn (IsolationForest, PCA), Metrics.
+### Steps Performed
 
-### **2. Load Dataset**
+1. **Import Libraries** – NumPy, Pandas, Matplotlib, Seaborn, Scikit-learn (`IsolationForest`, PCA), metrics.
+2. **Load Dataset**
 
 ```python
 df = pd.read_csv("/kaggle/input/creditcardfraud/creditcard.csv")
 ```
 
-### **3. Basic Exploration**
-
-Checked datatypes, missing values, class distribution.
-
-### **4. Preprocessing**
-
-* Dropped target column
-* Standardized features using `StandardScaler`
-
-### **5. Compute Contamination**
-
-Instead of manually guessing contamination, we use:
+3. **Basic Exploration** – Checked datatypes, missing values, class distribution.
+4. **Preprocessing** – Dropped target column and standardized features using `StandardScaler`.
+5. **Compute Contamination** – Used the true fraud ratio:
 
 ```python
-fraud_ratio = df["Class"].mean()
+fraud_ratio = df["Class"].mean()  # ≈ 0.001727
 ```
 
-This sets contamination ≈ 0.001727 (true fraud rate).
-
-### **6. Train Isolation Forest**
+6. **Train Isolation Forest**
 
 ```python
 iso = IsolationForest(
     n_estimators=200,
     contamination=fraud_ratio,
     max_samples="auto",
-    random_state=42,
+    random_state=42
 )
 iso.fit(X_scaled)
 ```
 
-### **7. Prediction**
+7. **Prediction** – Converted model output to binary anomaly labels:
 
-Isolation Forest predicts:
+* 1 → anomaly
+* 0 → normal
 
-* `1` → normal
-* `-1` → anomaly
+8. **Evaluation** (using true labels only for analysis)
 
-Converted to:
+* Confusion matrix
+* Classification report: Precision & Recall (fraud = 0.25)
+* Accuracy ≈ 99.74% (not meaningful due to imbalance)
 
-* `0` → normal
-* `1` → anomaly
+9. **Visualization**
 
-Added anomaly scores and PCA components.
-
-### **8. Evaluation (Using True Labels ONLY for Analysis)**
-
-Confusion Matrix:
-
-```
-Predicted   0      1
-Actual
-0       283947   368
-1          368   124
-```
-
-Classification Report:
-
-* Precision (fraud): 0.25
-* Recall (fraud): 0.25
-* Accuracy: ~99.74% (not a good metric for imbalanced data)
-
-### **9. Visualization**
-
-* Anomaly Score Distribution
-* PCA 2D Scatterplot of anomalies
+* Anomaly score distribution
+* PCA 2D scatter of anomalies
 * Crosstab comparison of fraud vs detected anomalies
 
-### **10. Save Results**
+10. **Save Results**
 
 ```python
 df.to_csv("isolation_forest_results.csv", index=False)
 ```
 
----
-
-
-##  **Future Project**
-
-- **Local Outlier Factor (LOF)**
-- **One-Class SVM**
-- Oversample anomalies using **SMOTE** for supervised models
-- Add **threshold tuning** on anomaly scores
+**Conclusion:**
+Isolation Forest provides a strong **unsupervised baseline**. While recall is limited, it is useful when labels are scarce or imbalanced.
 
 ---
 
-##  **Conclusion**
+## 2. Local Outlier Factor (LOF)
 
-Isolation Forest provides a solid unsupervised baseline for anomaly detection.
-It cannot match supervised ML in recall but is useful when labels are scarce or imbalanced.
+**LOF** detects anomalies based on **local density deviations** relative to neighbors.
+
+### Steps Performed
+
+1. **Import Libraries** – NumPy, Pandas, Matplotlib, Scikit-learn (`LocalOutlierFactor`, PCA, metrics), StandardScaler.
+2. **Load Dataset**
+
+```python
+df = pd.read_csv("/kaggle/input/creditcardfraud/creditcard.csv")
+```
+
+3. **Preprocessing**
+
+* Dropped duplicates (important for distance-based calculations)
+* Separated features (`X`) and labels (`y`)
+* Standardized features with `StandardScaler`
+
+4. **Estimate Contamination**
+
+```python
+contamination = y.mean()  # ≈ 0.001667
+```
+
+5. **Fit LOF Model**
+
+```python
+lof = LocalOutlierFactor(
+    n_neighbors=20,
+    contamination=contamination,
+    novelty=False,
+    metric="euclidean"
+)
+y_pred = lof.fit_predict(X_scaled)
+y_pred_binary = (y_pred == -1).astype(int)
+```
+
+6. **Anomaly Scores**
+
+```
+scores = -lof.negative_outlier_factor_
+df_results["lof_score"] = scores
+df_results["predicted_anomaly"] = y_pred_binary
+```
+
+7. **Evaluation** (true labels only)
+
+* Classification report
+* ROC-AUC: 0.51
+* Confirms LOF fails to detect fraud due to density assumptions
+
+8. **Visualization**
+
+* LOF score histogram
+* PCA 2D scatter with LOF scores
+* ROC curve
+
+9. **Save Results**
+
+```python
+df_results.to_csv("lof_results.csv", index=False)
+```
+
+### Why LOF Performs Poorly
+
+* **Fraud is not a density anomaly** – anomalies are not sparse; they overlap normal clusters.
+* **High dimensionality** – distance metrics become less informative in 30+ dimensions.
+* **Extreme imbalance** – contamination rate approximates true fraud, but density structure fails.
+* **novelty=False** – LOF scores are training-only, limiting predictive power.
+
+**Conclusion:**
+LOF is effective **only when anomalies are local density outliers**. On this dataset, it performs near random, demonstrating the importance of algorithm choice for the problem type.
 
 ---
+
+## Summary
+
+| Model                | Use Case & Observations                                                                                                                             |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Isolation Forest** | Performs well as an unsupervised baseline; isolates anomalies effectively; limited recall on fraud.                                                 |
+| **LOF**              | Fails on this dataset due to high dimensionality, overlapping anomalies, and density assumptions; educational for understanding method limitations. |
+
+These notebooks provide a **comprehensive workflow** for model-based anomaly detection, including preprocessing, model fitting, evaluation, visualization, and saving results.
